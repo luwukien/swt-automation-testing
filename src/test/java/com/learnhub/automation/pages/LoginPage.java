@@ -11,18 +11,18 @@ import java.time.Duration;
 
 /**
  * Page Object Model cho trang Đăng nhập (/auth/login).
- * Cung cấp locators chuẩn xác theo giao diện login.jsp và các hành vi tương tác.
+ * Hỗ trợ linh hoạt cả form có ID "loginId" (Courson) hoặc "email" (LearnHub).
  */
 public class LoginPage {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    // Locators định vị từ form giao diện login.jsp thực tế
-    private final By emailInput = By.id("email");
+    // Locators hỗ trợ cả hai phiên bản giao diện (loginId hoặc email)
+    private final By emailInput = By.cssSelector("#loginId, #email, input[name='loginId'], input[name='email']");
     private final By passwordInput = By.id("password");
-    private final By submitButton = By.cssSelector("button[type='submit']");
-    private final By errorMessageAlert = By.cssSelector(".bg-rose-50 span");
-    private final By successMessageAlert = By.cssSelector(".bg-emerald-50 span");
+    private final By submitButton = By.cssSelector("button[type='submit'], .btn-submit");
+    private final By errorMessageAlert = By.cssSelector(".alert-server, .bg-rose-50 span, .courson-toast-error");
+    private final By successMessageAlert = By.cssSelector(".bg-emerald-50 span, .courson-toast-success");
     private final By forgotPasswordLink = By.cssSelector("a[href*='forgot-password']");
     private final By registerLink = By.cssSelector("a[href*='register']");
 
@@ -54,10 +54,7 @@ public class LoginPage {
     }
 
     /**
-     * Hàm đăng nhập cốt lõi theo vai trò (Admin, Manager, Expert, Student)
-     * Dùng chung cho TV4 và TV5.
-     *
-     * @param role Tên vai trò, ví dụ: "Admin", "Manager", "Expert", "Student"
+     * Hàm đăng nhập theo vai trò
      */
     public void loginAs(String role) {
         TestAccount account = TestAccount.fromRole(role);
@@ -74,7 +71,7 @@ public class LoginPage {
     }
 
     /**
-     * Đăng nhập với email và password tùy biến (dùng cho test case đăng nhập sai, để trống,...).
+     * Đăng nhập với email và password tùy biến.
      */
     public void login(String email, String password) {
         enterEmail(email);
@@ -83,7 +80,7 @@ public class LoginPage {
     }
 
     /**
-     * Lấy thông báo lỗi hiển thị trên trang đăng nhập (nếu có).
+     * Lấy thông báo lỗi hiển thị trên trang đăng nhập.
      */
     public String getErrorMessage() {
         WebElement alert = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageAlert));
@@ -91,22 +88,10 @@ public class LoginPage {
     }
 
     /**
-     * Lấy thông báo thành công hiển thị trên trang (ví dụ sau khi reset mật khẩu thành công).
+     * Lấy thông báo thành công hiển thị trên trang.
      */
     public String getSuccessMessage() {
         WebElement alert = wait.until(ExpectedConditions.visibilityOfElementLocated(successMessageAlert));
         return alert.getText().trim();
     }
-
-    /**
-     * Kiểm tra nút Submit có đang hiển thị hay không.
-     */
-    public boolean isSubmitButtonDisplayed() {
-        try {
-            return driver.findElement(submitButton).isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }
-

@@ -3,7 +3,7 @@
     <test name="LoginTests">
         <classes>
             <class name="com.learnhub.automation.tests.LoginSampleTest" />
+            <class name="com.learnhub.automation.tests.LoginInvalidTest" />
         </classes>
     </test>
 </suite>
-
